@@ -1,7 +1,6 @@
 import React from 'react'
 import { TbUserScreen } from "react-icons/tb";
 import { Link, useNavigate } from 'react-router-dom';
-import uploadMedia from '../helpers/uploadMedia';
 import axios from 'axios';
 import toast from 'react-hot-toast'
 
