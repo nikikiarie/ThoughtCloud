@@ -2,31 +2,32 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
+import { LuHeart } from 'react-icons/lu';
+import { useDispatch, useSelector } from 'react-redux';
+import { toggleLikeAsync } from '../redux/postSlicce';
 
 const ViewPost = () => {
   const { postId } = useParams();
-  const [post, setPost] = useState(null);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
+  const posts = useSelector((state) => state.posts.posts);
 
-  useEffect(() => {
-    const fetchPost = async () => {
-      try {
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND}/api/blogs/${postId}`);
-        setPost(response.data);
-      } catch (err) {
-        setError('Unable to load post.');
-      }
-    };
+  const post = posts.find((p) => p._id === postId);
 
-    fetchPost();
-  }, [postId]);
+  const isLiked = post?.likes && post.likes[user._id];
+  const likeCount = post?.likes ? Object.keys(post.likes).length : 0;
+
+  const handleLike = () => {
+    dispatch(toggleLikeAsync({ postId: post._id, userId: user._id }));
+  };
 
   const handleGoBack = () => navigate(-1);
 
   return (
     <div className="min-h-screen bg-white">
-      <Navbar hideLinks={true} alignLeft={true} />
+      <Navbar />
 
       <section className="text-center py-16 bg-white">
         {error ? (
@@ -34,12 +35,14 @@ const ViewPost = () => {
         ) : post ? (
           <div className="max-w-3xl mx-auto p-8 bg-white rounded-lg shadow-lg">
             <h1 className="text-4xl font-bold text-indigo-600 mb-4">{post.title}</h1>
-            <p className="text-gray-500 mb-4">by {post.author} on {new Date(post.date).toLocaleDateString()}</p>
+            <p className="text-gray-500 mb-4">
+              by {post.author} on {new Date(post?.datePublished).toLocaleDateString()}
+            </p>
 
-            {post.image && (
+            {post.pic && (
               <div className="mb-6">
                 <img
-                  src={post.image}
+                  src={post.pic}
                   alt="Post cover"
                   className="w-full h-64 object-cover rounded-md"
                 />
@@ -50,6 +53,20 @@ const ViewPost = () => {
               {post.content}
             </div>
 
+            {/* Like button and count section */}
+            <div className="flex items-center font-medium text-lg mt-2">
+              <div className="ml-auto justify-center items-center px-6 flex">
+                <LuHeart
+                  onClick={handleLike}
+                  className={`cursor-pointer ${isLiked ? 'fill-current' : ""} ${isLiked ? 'text-red-500' : 'text-gray-900'}`}
+                />
+                <span className="ml-2 text-gray-700">
+                  {likeCount} {likeCount === 1 ? 'Like' : 'Likes'}
+                </span>
+              </div>
+            </div>
+
+            {/* Go Back button */}
             <button
               onClick={handleGoBack}
               className="mt-6 bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50"
