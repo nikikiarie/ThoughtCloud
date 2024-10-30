@@ -12,6 +12,7 @@ const Password = () => {
   const location = useLocation();
   const dispatch = useDispatch();
   const state = location?.state?.data;
+ 
 
   useEffect(() => {
     if (!location?.state?.data) {
@@ -38,7 +39,7 @@ const Password = () => {
         localStorage.setItem('token', res?.data?.token);
         setData({ password: '' });
         dispatch(setUser(state));
-        navigate('/');
+        navigate(location?.state?.from || '/');
       }
     } catch (error) {
       toast.error(error?.response?.data?.error || "Something went wrong");

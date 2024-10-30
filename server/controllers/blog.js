@@ -41,6 +41,21 @@ const getBlogById = async (req, res) => {
     res.status(500).json({ error: 'Failed to retrieve blog post' });
   }
 };
+const getBlogsByUserId = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const blogs = await Blog.find({ authorId: userId });
+
+    if (blogs.length === 0) {
+      return res.status(404).json({ message: 'No blogs found for this user.' });
+    }
+
+    res.status(200).json(blogs);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to retrieve user\'s blog posts' });
+  }
+};
+
 
 // Update a blog post by ID
 const updateBlogById = async (req, res) => {
@@ -96,13 +111,12 @@ const searchBlogs = async (req, res) => {
 };
 
 const likeBlogPost = async (req, res) => {
-  // Log the entire request object for debugging
-  console.log(req.body);
+
 
   try {
     // Extract postId from the URL parameters and userId from the request body
-    const postId = req.params.blogId; // Get postId from the URL
-    const { userId } = req.body; // Get userId from the request body
+    const postId = req.params.blogId;
+    const { userId } = req.body; 
 
     const blog = await Blog.findById(postId);
     if (!blog) {
@@ -126,8 +140,8 @@ const likeBlogPost = async (req, res) => {
 
 
 const unlikeBlogPost = async (req, res) => {
-  const { blogId } = req.params; // Extract blog ID from request parameters
-  const { userId } = req.body; // Extract user ID from request body
+  const { blogId } = req.params; 
+  const { userId } = req.body; 
 
   try {
     const blog = await Blog.findById(blogId);
@@ -159,4 +173,5 @@ module.exports = {
   searchBlogs,
   likeBlogPost,
   unlikeBlogPost,
+  getBlogsByUserId
 };

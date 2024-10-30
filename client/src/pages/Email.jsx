@@ -15,6 +15,7 @@ const Email = () => {
 
   const fromPost = location.state?.fromPost;
   const user = useSelector((state) => state.user);
+  console.log("From",fromPost);
 
   useEffect(() => {
     if (user?.token) {
@@ -36,7 +37,7 @@ const Email = () => {
 
       if (res?.data?.message) {
         setData({ email: '' });
-        navigate('/password', { state: { data: res?.data?.data } });
+        navigate('/password', { state: { data: res?.data?.data, from: location.state?.fromPost || '/' } });
       }
     } catch (error) {
       toast.error(error?.response?.data?.message || "Something went wrong");

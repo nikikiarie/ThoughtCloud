@@ -2,7 +2,7 @@ const express = require('express');
 const register = require('../controllers/register');
 const email_check = require('../controllers/email');
 const password = require('../controllers/password');
-const { createBlog, updateBlog, likeBlog, getBlog, deleteBlog, getAllBlogs, addComment, getAllComments, getBlogById, likeBlogPost
+const { createBlog, updateBlog, likeBlog, getBlog, deleteBlog, getAllBlogs, addComment, getAllComments, getBlogById, likeBlogPost, getBlogsByUserId
   } = require('../controllers/blog'); // Import the 
 const { getUserById } = require('../controllers/user');
 
@@ -18,7 +18,7 @@ router.post('/blogs/create', createBlog);
 
 router.get('/users/:userId', getUserById);
 
-// router.put('/blogs/:id', updateBlog);
+router.get('/blogs/:userId', getBlogsByUserId);
 
 router.post('/blogs/:blogId/like', likeBlogPost);
 

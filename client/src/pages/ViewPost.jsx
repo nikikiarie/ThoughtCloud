@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
 import { LuHeart } from 'react-icons/lu';
@@ -11,17 +11,23 @@ const ViewPost = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
   const user = useSelector((state) => state.user);
   const posts = useSelector((state) => state.posts.posts);
 
   const post = posts.find((p) => p._id === postId);
+    // const {path} = location.pathname;
 
   const isLiked = post?.likes && post.likes[user._id];
   const likeCount = post?.likes ? Object.keys(post.likes).length : 0;
 
   const handleLike = () => {
-    dispatch(toggleLikeAsync({ postId: post._id, userId: user._id }));
+    user?.token ? dispatch(toggleLikeAsync({ postId: post._id, userId: user._id })) : navigate('/email', { state: { fromPost: location.pathname } });
+
+    
   };
+  
+  
 
   const handleGoBack = () => navigate(-1);
 

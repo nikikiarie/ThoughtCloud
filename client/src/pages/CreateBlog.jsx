@@ -23,7 +23,7 @@ const CreateBlog = () => {
   });
 
   useEffect(() => {
-    if (user?.token) {
+    if (!user?.token) {
       navigate('/'); // Redirect to home if logged in
     }
   }, [navigate]);
@@ -32,7 +32,7 @@ const CreateBlog = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const uploadPhoto = await uploadMedia(uploadImage);
+    const uploadPhoto = uploadImage ? await uploadMedia(uploadImage) : null;
     const blogData = { ...data, pic: uploadPhoto?.secure_url || "https://res.cloudinary.com/dfm1odvv4/image/upload/v1730225749/erf5k513tlscwj3fpj3b.jpg", userId: user._id, author: user.name };
 
     const url = `${import.meta.env.VITE_BACKEND}/api/blogs/create`;
@@ -42,14 +42,14 @@ const CreateBlog = () => {
       console.log(res);
       setMessage(res?.data?.message || "Blog created successfully");
       setNav(true)
-      if (res?.data?.message) {
+      if (res?.data?._id) {
         setData({
           title: "",
           description: "",
           content: "",
           coverImage: "",
         });
-        navigate("/blogs");
+        navigate(`/${res.data?.authorId}/blogs`, { state: { fromCreateBlog:  true } });
       }
     } catch (error) {
       setMessage("Blog creation failed: " + error.message);
@@ -192,12 +192,7 @@ const CreateBlog = () => {
             >
               Create Blog
             </button>
-            <button onClick={() => navigate(`/${user._id}/blogs`)}
-              type="submit"
-              className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50"
-            >
-              Create Blog
-            </button>
+            
           </form>
         </div>
       </section>
