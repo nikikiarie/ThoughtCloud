@@ -19,6 +19,7 @@ const createBlog = async (req, res) => {
 const getAllBlogs = async (req, res) => {
   try {
     const blogs = await Blog.find();
+    console.log(blogs)
     res.status(200).json(blogs);
   } catch (error) {
     res.status(500).json({ error: 'Failed to retrieve blog posts' });
@@ -27,8 +28,9 @@ const getAllBlogs = async (req, res) => {
 
 // Retrieve a single blog post by ID
 const getBlogById = async (req, res) => {
+  console.log(req.params)
   try {
-    const blog = await Blog.findById(req.params.id);
+    const blog = await Blog.findById(req.params.blogId);
 
     if (!blog) {
       return res.status(404).json({ error: 'Blog post not found' });
@@ -93,6 +95,61 @@ const searchBlogs = async (req, res) => {
   }
 };
 
+const likeBlogPost = async (req, res) => {
+  // Log the entire request object for debugging
+  console.log(req.body);
+
+  try {
+    // Extract postId from the URL parameters and userId from the request body
+    const postId = req.params.blogId; // Get postId from the URL
+    const { userId } = req.body; // Get userId from the request body
+
+    const blog = await Blog.findById(postId);
+    if (!blog) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    // Toggle like status
+    if (blog.likes.get(userId)) {
+      blog.likes.delete(userId);
+    } else {
+      blog.likes.set(userId, true);
+    }
+
+    await blog.save();
+    res.status(200).json({ postId, likes: Object.fromEntries(blog.likes) });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+
+const unlikeBlogPost = async (req, res) => {
+  const { blogId } = req.params; // Extract blog ID from request parameters
+  const { userId } = req.body; // Extract user ID from request body
+
+  try {
+    const blog = await Blog.findById(blogId);
+    if (!blog) {
+      return res.status(404).json({ message: 'Blog not found' });
+    }
+
+    // Check if the user has not liked the post
+    if (!blog.likes.includes(userId)) {
+      return res.status(400).json({ message: 'You have not liked this post yet' });
+    }
+
+    // Remove user ID from the likes array
+    blog.likes = blog.likes.filter(id => id !== userId);
+    await blog.save();
+
+    res.status(200).json({ message: 'Blog post unliked', likes: blog.likes });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   createBlog,
   updateBlogById,
@@ -100,4 +157,6 @@ module.exports = {
   getAllBlogs,
   getBlogById,
   searchBlogs,
+  likeBlogPost,
+  unlikeBlogPost,
 };

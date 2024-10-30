@@ -1,87 +1,94 @@
-import React, { useEffect } from 'react'
-import { TbUserScreen } from "react-icons/tb";
+import React, { useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import toast from 'react-hot-toast'
-
+import toast from 'react-hot-toast';
+import { useDispatch } from 'react-redux';
+import { setToken, setUser } from '../redux/userSlice';
+import Navbar from '../components/Navbar';
 
 const Password = () => {
-  const [data, setData] = React.useState({
-    password: '',
-  })
-
-  const navigate = useNavigate()
-  const location = useLocation()
-  console.log(location.state)
+  const [data, setData] = React.useState({ password: '' });
+  const navigate = useNavigate();
+  const location = useLocation();
+  const dispatch = useDispatch();
+  const state = location?.state?.data;
 
   useEffect(() => {
-    if(!location?.state?.data){
-      navigate('/email')
+    if (!location?.state?.data) {
+      navigate('/email');
     }
-  })
+  }, [location, navigate]);
 
-  const handleSubmit = async(e) => {
-    e.preventDefault()
-    e.stopPropagation()
-    
-    const url = `${import.meta.env.VITE_BACKEND}/api/auth/password`
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-    console.log(location)
+    const url = `${import.meta.env.VITE_BACKEND}/api/auth/password`;
 
     try {
-      const res = await axios.post(url, { 
+      const res = await axios.post(url, {
         userId: location?.state?.data?._id,
         password: data.password
-      },{withCredentials: true})
+      }, { withCredentials: true });
 
-      toast.success(res?.data?.message || "User registered successfully")
+      toast.success(res?.data?.message || "User registered successfully");
 
       if (res?.data?.message) {
-        setData({
-          password: '',
-        })
-        navigate('/')
+        dispatch(setToken(res?.data));
+        localStorage.setItem('token', res?.data?.token);
+        setData({ password: '' });
+        dispatch(setUser(state));
+        navigate('/');
       }
     } catch (error) {
-      toast.error(error?.response?.data?.error || "Something went wrong")
-      console.log(error)
-      
+      toast.error(error?.response?.data?.error || "Something went wrong");
     }
-  }
-
-  
- 
+  };
 
   const handleChange = (e) => {
-    setData((prev) =>{
-      return{
+    setData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value
-    }})
-  }
-
+      [e.target.name]: e.target.value,
+    }));
+  };
 
   return (
-    <div className='mt-5'>
-      <div className='mx-auto bg-white w-full mx:2 p-4 max-w-md rounded overflow-hidden'>
-        <div>
-          {/* <TbUserScreen width={70} height={70} name={location?.state?.name} imageUrl={location?.state?.profilePic}/> */}
-          <h2 className='semi-bold text-lg p-1'>{location?.state?.name}</h2>
-          {/* <TbUserScreen className='mx-auto text-5xl text-primary'/> */}
-        </div>
-        <h3>Welcome to Chat App</h3>
+    <div className="min-h-screen bg-white">
+      <Navbar hideLinks={true} alignLeft={true} />
 
-        <form className='grid gap-4' onSubmit={handleSubmit}>
-          <div className='flex flex-col gap-1'>
-            <label htmlFor="password">Password :</label>
-            <input value={data.password} className='bg-slate-100 px-2 py-1 focus:outline-primary' type="password" id='password' name='password' placeholder='Enter your password' onChange={handleChange} required/>
-          </div>
-          <button className='bg-primary text-lg px-4 leading-relaxed tracking-wide py-1 hover:bg-sec rounded mt-4'>Log In</button>
-        </form>
-        <p className='my-3 text-center'>New User?<Link to={"/forgotPassword"} className='hover:text-primary font-semibold'>Forgot password</Link></p>
+      <div className="flex items-center justify-center min-h-[calc(100vh-64px)]"> {/* Adjust min-height if navbar has specific height */}
+        <div className='max-w-md w-full mx-auto bg-white p-8 rounded-lg shadow-lg'>
+          <h2 className='text-lg font-semibold text-center'>{location?.state?.name}</h2>
+          <h3 className="text-center mb-4 text-lg font-medium text-gray-600">Welcome to Chat App</h3>
+
+          <form className='grid gap-4' onSubmit={handleSubmit}>
+            <div className='flex flex-col gap-1'>
+              <label htmlFor="password" className='text-gray-700 text-lg font-medium'>Password:</label>
+              <input
+                value={data.password}
+                className='bg-gray-100 border border-gray-300 px-4 py-2 rounded-md focus:ring-indigo-500 focus:border-indigo-500'
+                type="password"
+                id='password'
+                name='password'
+                placeholder='Enter your password'
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <button className='bg-indigo-600 text-white text-lg px-4 leading-relaxed tracking-wide py-2 hover:bg-indigo-700 rounded mt-4'>
+              Log In
+            </button>
+          </form>
+          <p className='my-3 text-center text-gray-600'>
+            New User?{" "}
+            <Link to={"/forgotPassword"} className='hover:text-indigo-600 font-semibold'>
+              Forgot password
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Password
+export default Password;

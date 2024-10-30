@@ -9,11 +9,10 @@ const Post = ({post}) => {
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate()
-  console.log(user.name)
-  console.log(post.author)
 
     const handleLike = () => {
-      dispatch(toggleLikeAsync({ postId: post._id, userId: user._id }));
+      user?.token ? dispatch(toggleLikeAsync({ postId: post._id, userId: user._id })) : navigate('/email', { state: { fromPost: true } });
+      
     };
   
   //   const isLiked = post?.likes instanceof Map && post.likes.has(user._id);
@@ -32,10 +31,9 @@ const Post = ({post}) => {
       
       <div key={post.id} className="py-8 max-w-sm rounded-lg overflow-hidden shadow-lg" >
       <Link to={`/posts/${post._id}`}>
-            <img src={post.pic} alt="Blog 3" className="w-full"/>
+            <img src={post.pic} alt="Blog 3" className="w-full h-48 object-cover"/>
             <div className="px-6 pt-4 ">
-              <span className="text-indigo-600 font-semibold text-sm">{post.title}</span>
-              <h2 className="font-bold text-xl mt-2">20 Myths About Web Design</h2>
+              <span className="text-indigo-600 font-semibold text-lg">{post.title}</span>
               <p className="text-gray-700 text-base mt-2">
                 {post.description}
               </p>
@@ -43,15 +41,18 @@ const Post = ({post}) => {
 
             </div>
             </Link>
-            <Link to={`/${post.authorId}/blogs`}><p className="text-gray-700 text-base mt-2" onClick={() => navigate(`/${post.authorId}/blogs`)} >
+            <Link to={`/${post.authorId}/blogs`}><p className="text-gray-700 text-base mt-2 font-bold" onClick={() => navigate(`/${post.authorId}/blogs`)} >
                 {post.author}
               </p>
               </Link>
-              <div className="flex items-center mt-2">
-          <LuHeart onClick={handleLike} className={`cursor-pointer ${isLiked ? 'text-red-500' : 'text-gray-500'}`}  />
+              <div className="flex items-center mt-2 font-medium text-base">
+                <div className='ml-auto justify-center items-center px-6 flex'>
+                <LuHeart onClick={handleLike} className={`cursor-pointer ${isLiked ? "fill-current" : ""} ${isLiked ? 'text-red-500' : 'text-gray-500'}`}  />
           <span className="ml-2 text-gray-700">
           {likeCount} {likeCount === 1 ? 'Like' : 'Likes'}
           </span>
+                </div>
+          
         </div>
           
           </div>

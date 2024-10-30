@@ -8,13 +8,13 @@ async function email_check(req,res){
 
         if(!user){
             return res.status(400).json({
-                message : "user not exit",
+                message : "User doesn't exit",
                 error : true
             })
         }
 
         return res.status(200).json({
-            message : "email verify",
+            message : "Email Verified",
             success : true,
             data : user
         })

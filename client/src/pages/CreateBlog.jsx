@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { IoMdCloseCircle } from "react-icons/io";
 import Navbar from "../components/Navbar";
@@ -9,9 +9,11 @@ import { useSelector } from "react-redux";
 const CreateBlog = () => {
   const [message, setMessage] = useState("");
   const [uploadImage, setUploadImage] = useState("");
+  const [nav, setNav] = useState(false);
   const navigate = useNavigate();
-  const userId = useSelector((state) => state.user); 
-  console.log("User ID:", userId);
+
+  const user = useSelector((state) => state.user); 
+  console.log("User ID:", user);
 
   const [data, setData] = useState({
     title: "",
@@ -20,12 +22,18 @@ const CreateBlog = () => {
     coverImage: "",
   });
 
+  useEffect(() => {
+    if (user?.token) {
+      navigate('/'); // Redirect to home if logged in
+    }
+  }, [navigate]);
+
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const uploadPhoto = await uploadMedia(uploadImage);
-    const blogData = { ...data, coverImage: uploadPhoto?.secure_url, userId: userId._id };
+    const blogData = { ...data, pic: uploadPhoto?.secure_url || "https://res.cloudinary.com/dfm1odvv4/image/upload/v1730225749/erf5k513tlscwj3fpj3b.jpg", userId: user._id, author: user.name };
 
     const url = `${import.meta.env.VITE_BACKEND}/api/blogs/create`;
 
@@ -33,7 +41,7 @@ const CreateBlog = () => {
       const res = await axios.post(url, blogData);
       console.log(res);
       setMessage(res?.data?.message || "Blog created successfully");
-
+      setNav(true)
       if (res?.data?.message) {
         setData({
           title: "",
@@ -179,6 +187,12 @@ const CreateBlog = () => {
             )}
 
             <button
+              type="submit"
+              className=" mb-2 w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50"
+            >
+              Create Blog
+            </button>
+            <button onClick={() => navigate(`/${user._id}/blogs`)}
               type="submit"
               className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50"
             >

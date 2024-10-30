@@ -14,10 +14,11 @@ export const userSlice = createSlice({
   reducers: {
     setUser: (state, action) => {
       console.log(action.payload)
+      console.log(action.payload)
       state.name = action.payload.name
       state.email = action.payload.email
       state.profilePic = action.payload.profilePic
-      state.token = action.payload.token
+      // state.token = action.payload.token
       state._id = action.payload._id
     },
     setToken: (state, action) => {
@@ -27,13 +28,14 @@ export const userSlice = createSlice({
       state.token = action.payload
     },
     logOut:(state) => {
+      console.log(state)
       state.name = ""
       state.email = ""
       state.profilePic = ""
       state.token = "",
         state._id = ""
     }
-  }
+  },
 })
 
 
