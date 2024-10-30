@@ -12,8 +12,7 @@ const Navbar = ({hideLinks, alignLeft}) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    if (user.token) {
-        // If there's a user, dispatch logout action
+    if (user?.token) {
         dispatch(logOut());
 
     } else {
@@ -33,7 +32,8 @@ const Navbar = ({hideLinks, alignLeft}) => {
           <button onClick={handleClick} className="text-gray-600 hover:text-gray-800">{user.token ? "Log out" :  "Log In"}</button>
           <button className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"><Link to={!user.token ? "/register" : "/blog/create"}>{user.token ? "New Blog" : "Register"}</Link></button>
           
-          {user?.token ? <FaUserCircle className="text-4xl text-gray-600" /> : ""}
+          {user?.token ? <img src={user?.profilePic} alt="profile" className="w-10 h-10 rounded-full" onClick={() => navigate(`/:${user._id}/blogs`, { state: { fromCreateBlog:  user._id } })}/> : ""}
+          
         
         </div>
         </>

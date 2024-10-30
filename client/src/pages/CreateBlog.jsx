@@ -15,6 +15,7 @@ const CreateBlog = () => {
   const user = useSelector((state) => state.user); 
   console.log("User ID:", user);
 
+
   const [data, setData] = useState({
     title: "",
     description: "",
@@ -49,7 +50,7 @@ const CreateBlog = () => {
           content: "",
           coverImage: "",
         });
-        navigate(`/${res.data?.authorId}/blogs`, { state: { fromCreateBlog:  true } });
+        navigate(`/${res.data?.authorId}/blogs`, { state: { fromCreateBlog:  user._id } });
       }
     } catch (error) {
       setMessage("Blog creation failed: " + error.message);

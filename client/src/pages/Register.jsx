@@ -152,6 +152,9 @@ const Register = () => {
             <button type="submit" className={`w-full py-2 px-4 rounded-md ${loading ? 'bg-indigo-400' : 'bg-indigo-600 text-white'}`}  disabled={loading}>
               {loading ? 'Creating Account...' : 'Register'}
             </button>
+            <button onClick={() => navigate("/email")} className={`mt-4 border border-indigo-600 w-full py-2 px-4 rounded-md text-indigo-600 bg-white text-white'}`} >
+              Log In
+            </button>
           </form>
         </section>
       </div>

@@ -5,6 +5,7 @@ import Navbar from '../components/Navbar';
 import { LuHeart } from 'react-icons/lu';
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleLikeAsync } from '../redux/postSlicce';
+import Footer from '../components/Footer';
 
 const ViewPost = () => {
   const { postId } = useParams();
@@ -84,6 +85,7 @@ const ViewPost = () => {
           <p className="text-center text-gray-600">Loading post...</p>
         )}
       </section>
+      <Footer/>
     </div>
   );
 };
